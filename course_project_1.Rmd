@@ -1,0 +1,96 @@
+---
+output: html_document
+---
+#Reproducible Research - Course Project 1
+
+
+##Step 1 : Loading the data
+
+```{r pre-processing}
+setwd("c:/users/vijay/documents/rep_research/data")
+activity = read.csv("activity.csv")
+```
+
+
+##Step 2 : What is the mean total number of steps taken per day?
+
+###Histogram of the total number of steps taken each day
+
+```{r code to create the histogram}
+#use tapply to sum the number of steps by date
+steps_by_date = as.numeric(tapply(activity$steps, activity$date, sum, na.rm = T))
+#plot a histogram
+hist(steps_by_date, main = "Total Number of Steps Taken Each Day")
+```
+
+###Mean and Median of the Total Number of Steps Taken Each Day
+```{r mean and median}
+#mean of the number of steps taken each day
+mean(steps_by_date)
+#median of the number of steps taken each day
+median(steps_by_date)
+```
+
+
+##Step 3 : What is the average daily activity pattern?
+
+###Time-Series plot of daily activity pattern 
+
+```{r average daily activity pattern}
+adap = as.numeric(tapply(activity$steps, activity$interval, mean, na.rm = T))
+plot(adap, type="l", xlab = "Interval", ylab = "Number of Steps", main = "Average Daily Activity Pattern")
+```
+
+###5-minute interval with the maximum number of steps
+
+```{r interval with max steps}
+which.max(adap)
+```
+
+####The 104th 5-minute interval (approximately 9 am) has the most number of steps.
+
+
+##Step 4 : Imputing Missing Values
+
+###Total Number of rows with missing values (NAs)
+
+```{r number of missing value rows}
+table(is.na(activity))
+```
+
+####There are 2,304 rows with missing values in the "activity"" data frame (all from the "steps" field)
+
+###Create dataset with missing values filled by imputed values
+
+```{r create dataset with imputed values}
+#use "mice" package
+library(mice)
+#set the seed so as to make it reproducible
+set.seed(144)
+#do the imputation to create the new dataset("activity2") with the missing data filled in
+activity2 = complete(mice(activity))
+```
+
+####Histogram of the total number of steps taken each day (including imputed data)
+
+```{r code to create the imputed values histogram}
+#use tapply to sum the number of steps by date
+steps_imputed = as.numeric(tapply(activity2$steps, activity$date, sum, na.rm = T))
+#plot a histogram
+hist(steps_imputed, main = "Total Number of Steps Taken Each Day")
+```
+
+###Mean and Median of the Total Number of Steps Taken Each Day
+```{r mean and median for imputed dataset}
+#mean of the number of steps taken each day
+mean(steps_imputed)
+#median of the number of steps taken each day
+median(steps_imputed)
+```
+
+####The histogram is almost the same. Mean and median values, expectedly increase, as additional values have been added.
+
+
+
+
+
